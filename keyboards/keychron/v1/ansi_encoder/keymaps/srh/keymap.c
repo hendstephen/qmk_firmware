@@ -35,6 +35,10 @@
 #define KC_TASK LGUI(KC_TAB)
 #define KC_FLXP LGUI(KC_E)
 
+enum my_keycodes {
+    KC_USER_ENC = SAFE_RANGE
+};
+
 #ifdef TAP_DANCE_ENABLE
 #   define KC_X_SHFT TD(NUM_LAYR)
 #endif
@@ -44,7 +48,7 @@
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_ansi_82(
-        KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,     KC_F12,   KC_DEL,             KC_MPLY,
+        KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,     KC_F12,   KC_DEL,             KC_USER_ENC,
         KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,    KC_EQL,   KC_BSPC,            TG(_NUM),
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,    KC_RBRC,  KC_BSLS,            KC_HOME,
         KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,              KC_ENT,             KC_END,
@@ -74,7 +78,70 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [_FN]   = { ENCODER_CCW_CW(RGB_VAD, RGB_VAI)},
     [_NUM]  = { ENCODER_CCW_CW(_______, _______)}
 };
-#endif // ENCODER_MAP_ENABLE
+#endif
+#ifndef ENCODER_MAP_ENABLE
+// If you return true, it will allow the keyboard level code to run as well. 
+// Returning false will override the keyboard level code, depending on how the keyboard function is set up.
+// Ignore index, only one encoder
+bool encoder_update_user(uint8_t index, bool clockwise) {
+    if (index > 0) return true;
+
+    uint8_t mods = get_mods();
+    uint8_t current_layer = get_highest_layer(layer_state|default_layer_state);
+    switch (current_layer) {
+        case _BASE:
+            if (mods & MOD_MASK_ALT) {
+                tap_code(!clockwise ? KC_VOLD : KC_VOLU);
+            } else {
+                tap_code(!clockwise ? KC_MPRV : KC_MNXT);
+            }
+            return false;
+        case _FN:
+            if (!clockwise) {
+                rgb_matrix_decrease_val();
+            } else {
+                rgb_matrix_increase_val();
+            }
+            return false;
+        case _NUM:
+        default:
+            return false;
+    }
+
+    return false;
+}
+#endif
+
+bool handle_encoder(uint8_t layer, uint8_t mods) {
+    switch (layer) {
+        case _BASE:
+            if (mods & MOD_MASK_ALT) {
+                tap_code(KC_MUTE);
+            } else {
+                tap_code(KC_MPLY);
+            }
+            return false;
+        default:
+            return false;
+    }
+    return false;
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    uint8_t mods = get_mods();
+    uint8_t current_layer = get_highest_layer(layer_state|default_layer_state);
+    switch (keycode) {
+        case KC_USER_ENC:
+            if (record->event.pressed) {
+                return handle_encoder(current_layer, mods);
+            } else {
+                return true;
+            }
+        default:
+            return true; // Process all other keycodes normally
+    }
+    return true;
+}
 
 // Init custom RGB matrix logic
 void matrix_init_user(void) {
