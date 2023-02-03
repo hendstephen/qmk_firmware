@@ -48,12 +48,23 @@ enum my_keycodes {
 #   define KC_X_SHFT KC_LSFT
 #endif
 
+// Define home-row MT keycodes for convenience
+#define MT_A LGUI_T(KC_A)
+#define MT_S LALT_T(KC_S)
+#define MT_D LCTL_T(KC_D)
+#define MT_F LSFT_T(KC_F)
+#define MT_J RSFT_T(KC_J)
+#define MT_K RCTL_T(KC_K)
+#define MT_L RALT_T(KC_L)
+#define MT_SCLN LGUI_T(KC_SCLN)
+
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_ansi_82(
         KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,     KC_F12,   KC_DEL,             KC_USER_ENC,
         KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,    KC_EQL,   KC_BSPC,            TG(_NUM),
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,    KC_RBRC,  KC_BSLS,            KC_HOME,
-        KC_CAPS,  LGUI_T(KC_A),KC_S,  KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     LGUI_T(KC_SCLN),KC_QUOT, KC_ENT, KC_END,
+        KC_CAPS,  MT_A,     MT_S,     MT_D,     MT_F,     KC_G,     KC_H,     MT_J,     MT_K,     MT_L,     MT_SCLN,  KC_QUOT,    KC_ENT,   KC_END,
         KC_X_SHFT,KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,              KC_RSFT,  KC_UP,
         KC_LCTL,  KC_LCMD,  KC_LALT,                                KC_SPC,                                 KC_RALT,  MO(_FN),    KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT),
 
@@ -158,18 +169,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return true;
             }
 
-        // Mod-tap
+        // Mod-tap config
         case KC_USER_TOG_MT:
             user_config.enable_mod_tap ^= 1;
             eeconfig_update_user(user_config.raw);
             return false;
-        case LGUI_T(KC_A):
-            return handle_mt_intercept(KC_A);
-        case LGUI_T(KC_SCLN):
-            return handle_mt_intercept(KC_SCLN);
 
+        // Mod-tap home row mods
+        case MT_A: return handle_mt_intercept(KC_A);
+        case MT_S: return handle_mt_intercept(KC_S);
+        case MT_D: return handle_mt_intercept(KC_D);
+        case MT_F: return handle_mt_intercept(KC_F);
+        case MT_J: return handle_mt_intercept(KC_J);
+        case MT_K: return handle_mt_intercept(KC_K);
+        case MT_L: return handle_mt_intercept(KC_L);
+        case MT_SCLN: return handle_mt_intercept(KC_SCLN);
+
+        // Process all other keycodes normally
         default:
-            return true; // Process all other keycodes normally
+            return true;
     }
     return true;
 }
