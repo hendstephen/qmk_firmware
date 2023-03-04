@@ -24,14 +24,14 @@
 #endif
 // clang-format off
 
-typedef union {
-  uint32_t raw;
-  struct {
-    bool enable_mod_tap :1
-  };
-} user_config_t;
+// typedef union {
+//   uint32_t raw;
+//   struct {
+//     bool enable_mod_tap :1;
+//   };
+// } user_config_t;
 
-user_config_t user_config;
+// user_config_t user_config;
 
 #define KC_TASK LGUI(KC_TAB)
 #define KC_FLXP LGUI(KC_E)
@@ -49,15 +49,23 @@ enum my_keycodes {
 #endif
 
 // Define home-row MT keycodes for convenience
-#define MT_A LGUI_T(KC_A)
-#define MT_S LALT_T(KC_S)
-#define MT_D LCTL_T(KC_D)
-#define MT_F LSFT_T(KC_F)
-#define MT_J RSFT_T(KC_J)
-#define MT_K RCTL_T(KC_K)
-#define MT_L RALT_T(KC_L)
-#define MT_SCLN LGUI_T(KC_SCLN)
+// #define MT_A LGUI_T(KC_A)
+// #define MT_S LALT_T(KC_S)
+// #define MT_D LCTL_T(KC_D)
+// #define MT_F LSFT_T(KC_F)
+// #define MT_J RSFT_T(KC_J)
+// #define MT_K RCTL_T(KC_K)
+// #define MT_L RALT_T(KC_L)
+// #define MT_SCLN LGUI_T(KC_SCLN)
 
+#define MT_A KC_A
+#define MT_S KC_S
+#define MT_D KC_D
+#define MT_F KC_F
+#define MT_J KC_J
+#define MT_K KC_K
+#define MT_L KC_L
+#define MT_SCLN KC_SCLN
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_ansi_82(
@@ -70,7 +78,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_FN] = LAYOUT_ansi_82(
         _______,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,    KC_VOLU,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,            _______,
+        _______,  KC_USER_TOG_MT,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,            _______,
         RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,            _______,
         _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,  _______,  _______,  _______,  _______,  _______,  _______,              _______,            _______,
         _______,  _______,  _______,  _______,  _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,              _______,  _______,
@@ -78,10 +86,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NUM] = LAYOUT_ansi_82(
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,            _______,
-        _______,  KC_USER_TOG_MT,_______,_______,_______, _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,  DT_UP  ,  DT_DOWN,  DT_PRNT,  _______,  _______,    _______,  _______,            _______,
         _______,  _______,  KC_7   ,  KC_8   ,  KC_9   ,  _______,  _______,  KC_HOME,  KC_UP  ,  KC_END ,  _______,  _______,    _______,  _______,            _______,
         _______,  _______,  KC_4   ,  KC_5   ,  KC_6   ,  _______,  _______,  KC_LEFT,  KC_DOWN,  KC_RGHT,  _______,  _______,              _______,            _______,
-        _______,  KC_0   ,  KC_1   ,  KC_2   ,  KC_3   ,  _______,  _______,  _______,  _______,  _______,  _______,              _______,  _______,
+        _______,  KC_0   ,  KC_1   ,  KC_2   ,  KC_3   ,  _______,  _______,  OSM(MOD_RCTL),  _______,  _______,  _______,              _______,  _______,
         _______,  _______,  _______,                                _______,                                _______,  _______,    _______,  _______,  _______,  _______),
 };
 
@@ -140,21 +148,24 @@ bool handle_encoder(uint8_t layer, uint8_t mods) {
     return false;
 }
 
-// Handle intercept mod-tap keys. If we have MT enabled
-// we just pass the keystroke through for MT to handle.
-// If not we just (un)register the original keycode.
-bool handle_mt_intercept(uint16_t keycode) {
-    // Mod-tap enabled, let MT handle this keystroke
-    if (user_config.enable_mod_tap) {
-        return true;
-    } else if (record->event.pressed) {
-        register_code16(KC_A);
-    } else {
-        unregister_code16(KC_A);
-    }
+// // Handle intercept mod-tap keys. If we have MT enabled
+// // we just pass the keystroke through for MT to handle.
+// // If not we just (un)register the original keycode.
+// bool handle_mt_intercept(uint16_t keycode, keyrecord_t *record) {
+//     // Mod-tap enabled, let MT handle this keystroke
+//     if (user_config.enable_mod_tap) {
+//         return true;
+//     } if (record->tap.count) {
+//         if (record->event.pressed) {
+//             register_code16(keycode);
+//         } else {
+//             unregister_code16(keycode);
+//         }
+//         return false;
+//     } 
 
-    return false;
-}
+//     return false;
+// }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     uint8_t mods = get_mods();
@@ -169,21 +180,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return true;
             }
 
-        // Mod-tap config
-        case KC_USER_TOG_MT:
-            user_config.enable_mod_tap ^= 1;
-            eeconfig_update_user(user_config.raw);
-            return false;
+        // // Mod-tap config
+        // case KC_USER_TOG_MT:
+        //     user_config.enable_mod_tap ^= 1;
+        //     eeconfig_update_user(user_config.raw);
+        //     return false;
 
         // Mod-tap home row mods
-        case MT_A: return handle_mt_intercept(KC_A);
-        case MT_S: return handle_mt_intercept(KC_S);
-        case MT_D: return handle_mt_intercept(KC_D);
-        case MT_F: return handle_mt_intercept(KC_F);
-        case MT_J: return handle_mt_intercept(KC_J);
-        case MT_K: return handle_mt_intercept(KC_K);
-        case MT_L: return handle_mt_intercept(KC_L);
-        case MT_SCLN: return handle_mt_intercept(KC_SCLN);
+        //case MT_A: return handle_mt_intercept(KC_A, record);
+        // case MT_A:
+        //     return true;
+        //     // if (record->event.pressed && !user_config.enable_mod_tap) {
+        //     //     tap_code(KC_A);
+        //     //     return false;
+        //     // } else {
+        //     //     return true;
+        //     // }
+
+        // case MT_S: return handle_mt_intercept(KC_S, record);
+        // case MT_D: return handle_mt_intercept(KC_D, record);
+        // case MT_F: return handle_mt_intercept(KC_F, record);
+        // case MT_J: return handle_mt_intercept(KC_J, record);
+        // case MT_K: return handle_mt_intercept(KC_K, record);
+        // case MT_L: return handle_mt_intercept(KC_L, record);
+        // case MT_SCLN: return handle_mt_intercept(KC_SCLN, record);
 
         // Process all other keycodes normally
         default:
@@ -207,13 +227,13 @@ bool dip_switch_update_user(uint8_t index, bool active) {
 }
 #endif // DIP_SWITCH_ENABLE
 
-void keyboard_post_init_user(void) {
-    user_config.raw = eeconfig_read_user();
-}
+// void keyboard_post_init_user(void) {
+//     user_config.raw = eeconfig_read_user();
+// }
 
-// EEPROM is getting reset
-void eeconfig_init_user(void) {
-    user_config.raw = 0;
-    user_config.enable_mod_tap = false;
-    eeconfig_update_user(user_config.raw);
-}
+// // EEPROM is getting reset
+// void eeconfig_init_user(void) {
+//     user_config.raw = 0;
+//     user_config.enable_mod_tap = false;
+//     eeconfig_update_user(user_config.raw);
+// }

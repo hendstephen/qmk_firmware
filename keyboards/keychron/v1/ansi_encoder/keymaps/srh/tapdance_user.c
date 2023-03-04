@@ -60,6 +60,9 @@ static td_tap_t nl_tap_state = {
 void nl_finished(qk_tap_dance_state_t *state, void *user_data) {
     nl_tap_state.state = cur_dance(state);
     switch (nl_tap_state.state) {
+        case TD_SINGLE_TAP:
+            layer_on(_NUM);
+            break;
         case TD_DOUBLE_TAP:
             if (layer_state_is(_NUM)) {
                 layer_off(_NUM);
