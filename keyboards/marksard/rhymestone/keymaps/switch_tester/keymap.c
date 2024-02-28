@@ -15,7 +15,7 @@
  */
 #include QMK_KEYBOARD_H
 
-enum layer_number {
+enum custom_layers {
   _BASE,
   _ADJUST,
 };

@@ -23,7 +23,7 @@ enum custom_keycodes {
     WRTROM,
 };
 
-enum layer_number {
+enum custom_layers {
     _AUDIO = 0,
     _HUE,
     _SAT,

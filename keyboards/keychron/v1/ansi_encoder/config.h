@@ -16,6 +16,19 @@
 
 #pragma once
 
+#define ACHORDION_STREAK
+#define TAPPING_TERM 175
+#define PERMISSIVE_HOLD
+#define QUICK_TAP_TERM_PER_KEY
+
+// // default but used in macros
+// #undef TAPPING_TERM
+// #define TAPPING_TERM 200
+
+// // Enable rapid switch from tap to hold, disables double tap hold auto-repeat.
+// #define QUICK_TAP_TERM 0
+// #define PERMISSIVE_HOLD
+
 /* RGB Matrix Configuration */
 #define DRIVER_1_LED_TOTAL 45
 #define DRIVER_2_LED_TOTAL 37
