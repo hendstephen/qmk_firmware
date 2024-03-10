@@ -15,7 +15,7 @@
  */
 
 #include QMK_KEYBOARD_H
-#include "features/achordion.h"
+// #include "features/achordion.h"
 
 // clang-format off
 
@@ -84,48 +84,48 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 };
 #endif // ENCODER_MAP_ENABLE
 
-void matrix_scan_user(void) {
-  achordion_task();
-}
+// void matrix_scan_user(void) {
+//   achordion_task();
+// }
 
-bool process_record_user(uint16_t keycode, keyrecord_t* record) {
-  if (!process_achordion(keycode, record)) { return false; }
-  // Your macros ...
-  return true;
-}
+// bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+//   if (!process_achordion(keycode, record)) { return false; }
+//   // Your macros ...
+//   return true;
+// }
 
-uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-  return 1000;
-}
+// uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
+//   return 1000;
+// }
 
-uint16_t achordion_streak_timeout(uint16_t tap_hold_keycode) {
-  return 100;  // Default of 100 ms.
-}
+// uint16_t achordion_streak_timeout(uint16_t tap_hold_keycode) {
+//   return 100;  // Default of 100 ms.
+// }
 
-uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t* record) {
-  // If you quickly hold a tap-hold key after tapping it, the tap action is
-  // repeated. Key repeating is useful e.g. for Vim navigation keys, but can
-  // lead to missed triggers in fast typing. Here, returning 0 means we
-  // instead want to "force hold" and disable key repeating.
-  switch (keycode) {
-    // Repeating is useful for Vim navigation keys.
-    case U_KC_K:
-    case U_KC_L:
-      return QUICK_TAP_TERM;  // Enable key repeating.
-    default:
-      return 0;  // Otherwise, force hold and disable key repeating.
-  }
-}
+// uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t* record) {
+//   // If you quickly hold a tap-hold key after tapping it, the tap action is
+//   // repeated. Key repeating is useful e.g. for Vim navigation keys, but can
+//   // lead to missed triggers in fast typing. Here, returning 0 means we
+//   // instead want to "force hold" and disable key repeating.
+//   switch (keycode) {
+//     // Repeating is useful for Vim navigation keys.
+//     case U_KC_K:
+//     case U_KC_L:
+//       return QUICK_TAP_TERM;  // Enable key repeating.
+//     default:
+//       return 0;  // Otherwise, force hold and disable key repeating.
+//   }
+// }
 
-bool achordion_chord(uint16_t tap_hold_keycode,
-                     keyrecord_t* tap_hold_record,
-                     uint16_t other_keycode,
-                     keyrecord_t* other_record) {
+// bool achordion_chord(uint16_t tap_hold_keycode,
+//                      keyrecord_t* tap_hold_record,
+//                      uint16_t other_keycode,
+//                      keyrecord_t* other_record) {
 
-  switch (tap_hold_keycode) {
-    case U_KC_L: // Don't register L+Y as a hold
-        if (other_keycode == KC_Y) { return false; }
-  }
-  
-  return achordion_opposite_hands(tap_hold_record, other_record);
-}
+//   switch (tap_hold_keycode) {
+//     case U_KC_L: // Don't register L+Y as a hold
+//         if (other_keycode == KC_Y) { return false; }
+//   }
+
+//   return achordion_opposite_hands(tap_hold_record, other_record);
+// }
